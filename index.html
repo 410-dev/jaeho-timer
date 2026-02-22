@@ -41,7 +41,7 @@
     <script>
         // Target date set to February 24, 2026 at 00:00 KST (+09:00 offset)
         const targetDate = new Date('2026-02-24T00:00:00+09:00').getTime(); // 실제 입대 날짜 매칭
-        // const targetDate = new Date('2026-02-22T23:45:00+09:00').getTime(); // 전역 날짜
+        // const targetDate = new Date('2027-08-23T00:00:00+09:00').getTime(); // 전역 날짜
 
         const timerInterval = setInterval(() => {
             // Get current time in standard UTC epoch milliseconds
@@ -53,7 +53,7 @@
             // If the countdown is over, stop the timer, show the message, and trigger fireworks
             if (distance <= 0) {
                 clearInterval(timerInterval);
-                document.getElementById('timer').innerHTML = "00일 00시간 00분 00초 남음";
+                document.getElementById('timer').innerHTML = "00일 00시간 00분 00초 000밀리초 남음";
                 document.getElementById('message').style.display = 'block';
                 triggerFireworks();
                 return;
@@ -64,13 +64,15 @@
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            const milliseconds = Math.floor(distance % 1000);
 
             // Output the result in the element with id="timer"
             document.getElementById('timer').innerHTML =
                 String(days).padStart(2, '0') + "일 " +
                 String(hours).padStart(2, '0') + "시간 " +
                 String(minutes).padStart(2, '0') + "분 " +
-                String(seconds).padStart(2, '0') + "초 남음";
+                String(seconds).padStart(2, '0') + "초 " +
+                String(milliseconds).padStart(3, '0') + "밀리초 남음";
         }, 1000);
 
         function triggerFireworks() {
