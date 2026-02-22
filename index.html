@@ -29,19 +29,28 @@
             text-align: center;
             font-weight: bold;
         }
+        #until {
+            font-size: 2.5rem;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+    <div id="until">입대까지</div>
+    <!-- TODO 입대 후 아래로 바꾸기 -->
+    <!-- <div id="until">전역까지</div> -->
     <div id="timer">불러오는 중...</div>
     <div id="message">🎉입대 축하!🎉</div>
-    <!-- 입대 후 아래로 바꾸기 -->
+    <!-- TODO 입대 후 아래로 바꾸기 -->
     <!-- <div id="message">🎉전역 축하!🎉</div>  -->
 
     <script>
         // Target date set to February 24, 2026 at 00:00 KST (+09:00 offset)
         const targetDate = new Date('2026-02-24T00:00:00+09:00').getTime(); // 실제 입대 날짜 매칭
-        // const targetDate = new Date('2027-08-23T00:00:00+09:00').getTime(); // 전역 날짜
+        // const targetDate = new Date('2027-08-23T00:00:00+09:00').getTime(); // TODO 전역 날짜
 
         const timerInterval = setInterval(() => {
             // Get current time in standard UTC epoch milliseconds
