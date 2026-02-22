@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>재호의 행복한 군대생활 카운트다운</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+        }
+        #timer {
+            font-size: 4rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        #message {
+            display: none;
+            font-size: 2.5rem;
+            margin-top: 20px;
+            color: #4CAF50;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+    <div id="timer">불러오는 중...</div>
+    <div id="message">🎉입대 축하!🎉</div>
+    <!-- 입대 후 아래로 바꾸기 -->
+    <!-- <div id="message">🎉전역 축하!🎉</div>  -->
+
+    <script>
+        // Target date set to February 24, 2026 at 00:00 KST (+09:00 offset)
+        const targetDate = new Date('2026-02-24T00:00:00+09:00').getTime(); // 실제 입대 날짜 매칭
+        // const targetDate = new Date('2026-02-22T23:45:00+09:00').getTime(); // 전역 날짜
+
+        const timerInterval = setInterval(() => {
+            // Get current time in standard UTC epoch milliseconds
+            const now = new Date().getTime();
+            
+            // Find the distance between now and the target date
+            const distance = targetDate - now;
+
+            // If the countdown is over, stop the timer, show the message, and trigger fireworks
+            if (distance <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer').innerHTML = "00일 00시간 00분 00초 남음";
+                document.getElementById('message').style.display = 'block';
+                triggerFireworks();
+                return;
+            }
+
+            // Time calculations for days, hours, minutes, and seconds
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in the element with id="timer"
+            document.getElementById('timer').innerHTML =
+                String(days).padStart(2, '0') + "일 " +
+                String(hours).padStart(2, '0') + "시간 " +
+                String(minutes).padStart(2, '0') + "분 " +
+                String(seconds).padStart(2, '0') + "초 남음";
+        }, 1000);
+
+        function triggerFireworks() {
+            const duration = 5 * 1000; // Fireworks will last for 5 seconds
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                
+                // Fire from the left side
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } 
+                }));
+                
+                // Fire from the right side
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } 
+                }));
+            }, 250);
+        }
+    </script>
+</body>
+</html>
