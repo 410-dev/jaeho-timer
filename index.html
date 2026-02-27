@@ -10,24 +10,13 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
             background-color: #121212;
             color: #ffffff;
-        }
-        #timer {
-            font-size: 4rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-        #message {
-            display: none;
-            font-size: 2.5rem;
-            margin-top: 20px;
-            color: #4CAF50;
-            text-align: center;
-            font-weight: bold;
+            padding: 20px;
+            box-sizing: border-box;
         }
         #until {
             font-size: 2.5rem;
@@ -35,31 +24,115 @@
             text-align: center;
             font-weight: bold;
         }
+        #timer {
+            font-size: 4rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-top: 10px;
+            word-break: keep-all;
+        }
+        
+        /* Progress Bar Styles */
+        #progress-wrapper {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+        #progress-container {
+            width: 100%;
+            height: 30px;
+            background-color: #333333;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4CAF50, #81C784);
+            border-radius: 15px;
+            transition: width 0.1s linear;
+        }
+        #progress-text {
+            margin-top: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #81C784;
+        }
+        
+        #message {
+            display: none;
+            font-size: 2.5rem;
+            margin-top: 30px;
+            color: #4CAF50;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Mobile Adaptation */
+        @media (max-width: 768px) {
+            #until {
+                font-size: 1.8rem;
+            }
+            #timer {
+                font-size: 1.5rem; /* Scaled down heavily so milliseconds fit */
+                letter-spacing: 1px;
+            }
+            #progress-container {
+                height: 20px;
+            }
+            #progress-text {
+                font-size: 1.2rem;
+            }
+            #message {
+                font-size: 2rem;
+            }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-    <div id="until">입대까지</div>
-    <!-- TODO 입대 후 아래로 바꾸기 -->
-    <!-- <div id="until">전역까지</div> -->
+    <div id="until">전역까지</div>
     <div id="timer">불러오는 중...</div>
-    <div id="message">🎉입대 축하!🎉</div>
-    <!-- TODO 입대 후 아래로 바꾸기 -->
-    <!-- <div id="message">🎉전역 축하!🎉</div>  -->
+    
+    <div id="progress-wrapper">
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <div id="progress-text">0.000000%</div>
+    </div>
+
+    <div id="message">전역 축하!</div> 
 
     <script>
-        // Target date set to February 24, 2026 at 00:00 KST (+09:00 offset)
-        const targetDate = new Date('2026-02-24T14:00:00+09:00').getTime(); // 실제 입대 날짜 매칭
-        // const targetDate = new Date('2027-08-23T00:00:00+09:00').getTime(); // TODO 전역 날짜
+        // Target dates
+        const startDate  = new Date('2026-02-24T14:00:00+09:00').getTime(); 
+        const targetDate = new Date('2027-08-23T00:00:00+09:00').getTime(); 
+        
+        // Total duration for progress calculation
+        const totalDuration = targetDate - startDate;
 
         const timerInterval = setInterval(() => {
-            // Get current time in standard UTC epoch milliseconds
             const now = new Date().getTime();
-            
-            // Find the distance between now and the target date
             const distance = targetDate - now;
+            const elapsed = now - startDate;
 
-            // If the countdown is over, stop the timer, show the message, and trigger fireworks
+            // Calculate progress percentage
+            let percentage = 0;
+            if (elapsed > 0 && distance > 0) {
+                percentage = (elapsed / totalDuration) * 100;
+            } else if (distance <= 0) {
+                percentage = 100;
+            }
+
+            // Update progress bar width and text with 6 decimal places for smooth updating
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            document.getElementById('progress-text').innerText = percentage.toFixed(10) + '%';
+
             if (distance <= 0) {
                 clearInterval(timerInterval);
                 document.getElementById('timer').innerHTML = "00일 00시간 00분 00초 000밀리초 남음";
@@ -68,14 +141,12 @@
                 return;
             }
 
-            // Time calculations for days, hours, minutes, and seconds
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
             const milliseconds = Math.floor(distance % 1000);
 
-            // Output the result in the element with id="timer"
             document.getElementById('timer').innerHTML =
                 String(days).padStart(2, '0') + "일 " +
                 String(hours).padStart(2, '0') + "시간 " +
@@ -85,7 +156,7 @@
         }, 10);
 
         function triggerFireworks() {
-            const duration = 5 * 1000; // Fireworks will last for 5 seconds
+            const duration = 5 * 1000; 
             const animationEnd = Date.now() + duration;
             const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 
@@ -102,13 +173,11 @@
 
                 const particleCount = 50 * (timeLeft / duration);
                 
-                // Fire from the left side
                 confetti(Object.assign({}, defaults, { 
                     particleCount, 
                     origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } 
                 }));
                 
-                // Fire from the right side
                 confetti(Object.assign({}, defaults, { 
                     particleCount, 
                     origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } 
